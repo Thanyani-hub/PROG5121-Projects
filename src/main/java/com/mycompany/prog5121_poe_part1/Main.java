@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-/** Console entry point: register, then log in. */
+/** Console entry point: register, log in, then open QuickChat. */
 public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
@@ -33,5 +33,10 @@ public class Main {
 
         boolean success = login.loginUser(loginUser, loginPass);
         System.out.println(login.returnLoginStatus(success));
+
+        // Part 2: only logged-in users can use QuickChat
+        if (success) {
+            QuickChat.start(input);
+        }
     }
 }
