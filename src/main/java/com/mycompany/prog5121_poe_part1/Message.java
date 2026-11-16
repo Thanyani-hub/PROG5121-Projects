@@ -19,12 +19,13 @@ import java.util.regex.Pattern;
  * JSON storage (Gson) based on:
  * Google (n.d.) Gson User Guide. Available at:
  * https://github.com/google/gson/blob/main/UserGuide.md
- * (Accessed: <add the date you accessed it>).
+ * (Accessed: 16 November 2026).
  *
  * Regex syntax based on:
  * Oracle (n.d.) Class Pattern. Java Platform, Standard Edition 8 API
  * Specification. Available at:
  * https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html
+ * (Accessed: 16 November 2026).
  */
 public class Message {
 
@@ -161,7 +162,7 @@ public class Message {
         }
     }
 
-    /**
+       /**
      * Reads the JSON file back into a list of Message objects (Part 3).
      * Each JSON object is turned back into a Message with its constructor,
      * so the message hash is recalculated from the stored ID and text.
@@ -169,6 +170,7 @@ public class Message {
      * JSON parsing (JsonParser) based on:
      * Google (n.d.) Gson User Guide. Available at:
      * https://github.com/google/gson/blob/main/UserGuide.md
+     * (Accessed: 16 November 2026).
      */
     public static List<Message> readStoredMessages() {
         List<Message> stored = new ArrayList<>();
