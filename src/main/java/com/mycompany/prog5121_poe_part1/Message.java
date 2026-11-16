@@ -1,10 +1,12 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -28,7 +30,8 @@ public class Message {
 
     private static final Pattern CELL_PATTERN = Pattern.compile("^\\+27\\d{9}$");
     private static final int MAX_LENGTH = 250;
-    private static final String JSON_FILE = "messages.json";
+    // Not final so the unit tests can point the storage at a temporary file
+    private static String jsonFile = "messages.json";
     private static final Random RANDOM = new Random();
 
     // Messages sent while the program is running
@@ -136,28 +139,58 @@ public class Message {
         totalMessagesSent = 0;
     }
 
-    /** Appends this message to messages.json. */
+    /** Changes the JSON file used for storage (used by the unit tests). */
+    public static void setJsonFile(String fileName) {
+        jsonFile = fileName;
+    }
+
+    /** Appends this message to the JSON file. */
     public void storeMessage() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        Type listType = new TypeToken<ArrayList<Message>>() {}.getType();
-        List<Message> stored = new ArrayList<>();
-
-        try (FileReader reader = new FileReader(JSON_FILE)) {
-            List<Message> existing = gson.fromJson(reader, listType);
-            if (existing != null) {
-                stored = existing;
-            }
-        } catch (IOException e) {
-            // File does not exist yet - start a new list
-        }
-
+        List<Message> stored = readStoredMessages();
         stored.add(this);
+        saveMessages(stored);
+    }
 
-        try (FileWriter writer = new FileWriter(JSON_FILE)) {
-            gson.toJson(stored, writer);
+    /** Writes the given list of messages to the JSON file (replacing its contents). */
+    public static void saveMessages(List<Message> messages) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try (FileWriter writer = new FileWriter(jsonFile)) {
+            gson.toJson(messages, writer);
         } catch (IOException e) {
             System.out.println("Could not store message: " + e.getMessage());
         }
+    }
+
+    /**
+     * Reads the JSON file back into a list of Message objects (Part 3).
+     * Each JSON object is turned back into a Message with its constructor,
+     * so the message hash is recalculated from the stored ID and text.
+     *
+     * JSON parsing (JsonParser) based on:
+     * Google (n.d.) Gson User Guide. Available at:
+     * https://github.com/google/gson/blob/main/UserGuide.md
+     */
+    public static List<Message> readStoredMessages() {
+        List<Message> stored = new ArrayList<>();
+
+        try (FileReader reader = new FileReader(jsonFile)) {
+            JsonElement root = JsonParser.parseReader(reader);
+            if (root.isJsonArray()) {
+                for (JsonElement element : root.getAsJsonArray()) {
+                    JsonObject json = element.getAsJsonObject();
+                    stored.add(new Message(
+                            json.get("messageID").getAsString(),
+                            json.get("messageNumber").getAsInt(),
+                            json.get("recipient").getAsString(),
+                            json.get("messageText").getAsString()));
+                }
+            }
+        } catch (IOException e) {
+            // File does not exist yet - there are no stored messages
+        } catch (JsonParseException | IllegalStateException | NullPointerException e) {
+            System.out.println("Could not read stored messages: " + e.getMessage());
+        }
+        return stored;
     }
 
     /** Details in the required order: ID, Hash, Recipient, Message. */
