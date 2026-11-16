@@ -17,3 +17,5 @@ References
 Google (n.d.) Gson User Guide. Available at: https://github.com/google/gson/blob/main/UserGuide.md (Accessed: 19 October 2026).
 
 Oracle (n.d.) Class Pattern. Java Platform, Standard Edition 8 API Specification. Available at: https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html (Accessed: 28 September 2026).
+Reference for reading the JSON file (also noted in `Message.java`):
+Google (n.d.) Gson User Guide. Available at: https://github.com/google/gson/blob/main/UserGuide.md (Accessed: 16 November 2026).
