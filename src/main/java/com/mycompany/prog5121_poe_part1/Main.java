@@ -36,7 +36,7 @@ public class Main {
 
         // Part 2: only logged-in users can use QuickChat
         if (success) {
-            QuickChat.start(input);
+                        QuickChat.start(input, firstName + " " + lastName);
         }
     }
 }

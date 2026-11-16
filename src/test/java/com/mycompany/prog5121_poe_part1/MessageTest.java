@@ -1,8 +1,8 @@
 import static org.junit.jupiter.api.Assertions.*;
-import java.io.File;
-import org.junit.jupiter.api.AfterEach;
+import java.nio.file.Path;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /** Unit tests for the Message class using the Part 2 test data. */
 public class MessageTest {
@@ -10,18 +10,18 @@ public class MessageTest {
     private Message msg1;
     private Message msg2;
 
+    @TempDir
+    Path tempDir;
+
     @BeforeEach
     void setUp() {
+        // Store test messages in a temporary file so the real messages.json is never touched
+        Message.setJsonFile(tempDir.resolve("messages.json").toString());
         Message.clearSentMessages();
         msg1 = new Message("0012345678", 0, "+27718693002",
                 "Hi Mike, can you join us for dinner tonight?");
         msg2 = new Message("0098765432", 1, "08575975889",
                 "Hi Keegan, did you receive the payment?");
-    }
-
-    @AfterEach
-    void cleanUp() {
-        new File("messages.json").delete();   // remove file created by the store test
     }
 
     @Test
